@@ -10,10 +10,10 @@ const validate = (schema) => (req, res, next) => {
     return res.status(400).json({
       status: "error",
       message: "Dữ liệu không hợp lệ",
-      error: err.errors.map((e) => ({
+      error: err.errors?.map((e) => ({
         field: e.path,
         error: e.message,
-      })),
+      })) || [{ message: err.message }],
     });
   }
 };

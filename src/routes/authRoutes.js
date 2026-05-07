@@ -13,6 +13,7 @@ const router = express.Router();
 
 router.post("/register", validate(registerSchema), AuthController.register);
 router.post("/login", validate(loginSchema), AuthController.login);
+router.get("/users", protect, admin, AuthController.getAllUsers);
 router.get("/profile", protect, AuthController.getProfile);
 router.patch(
   "/profile",
@@ -20,17 +21,12 @@ router.patch(
   validate(updateUserProfileSchema),
   AuthController.updateProfile,
 );
-
-// Dành cho Admin: Lấy danh sách tất cả người dùng
-router.get("/users", protect, admin, AuthController.getAllUsers);
-
-// Dành cho Admin: Sửa tài khoản của người dùng bất kỳ (VD: đổi role)
 router.patch(
   "/users/:id",
   protect,
   admin,
   validate(updateUserByAdminSchema),
-  AuthController.updateUserByAdmin
+  AuthController.updateUserByAdmin,
 );
 
 module.exports = router;
