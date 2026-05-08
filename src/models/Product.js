@@ -32,6 +32,10 @@ const productSchema = new mongoose.Schema(
         type: String,
       },
     ],
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
     rating: {
       type: Number,
       default: 0,
@@ -43,7 +47,7 @@ const productSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const Product = mongoose.model("Product", productSchema);
