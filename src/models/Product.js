@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+const slugify = require("slugify");
 const productSchema = new mongoose.Schema(
   {
     name: {
@@ -15,6 +15,7 @@ const productSchema = new mongoose.Schema(
       type: Number,
       required: true,
       min: 0,
+      index: true
     },
     stock: {
       type: Number,
@@ -29,13 +30,30 @@ const productSchema = new mongoose.Schema(
     },
     images: [
       {
-        type: String,
+        url: {
+          type: String,
+          required: true
+        },
+        public_id: {
+          type: String,
+        },
       },
     ],
     isActive: {
       type: Boolean,
       default: true,
     },
+    slug: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    sku: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+
     rating: {
       type: Number,
       default: 0,
@@ -50,5 +68,11 @@ const productSchema = new mongoose.Schema(
   },
 );
 
+productSchema.pre("save", function () {
+  if (this.isModified("name")) {
+    this.slug = slugify(this.name, { lower: true, strict: true });
+  }
+})
+productSchema.index({ name: "text", description: "text" })
 const Product = mongoose.model("Product", productSchema);
 module.exports = Product;

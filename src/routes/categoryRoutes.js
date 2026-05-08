@@ -2,7 +2,6 @@ const express = require("express");
 const categoryController = require("../controllers/categoryController");
 const { protect, admin } = require("../middlewares/authMiddleware");
 const validate = require("../middlewares/validate");
-const { objectIdSchema } = require("../utils/validators");
 const {
   createCategorySchema,
   updateCategorySchema,
