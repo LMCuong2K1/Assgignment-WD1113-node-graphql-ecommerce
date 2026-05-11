@@ -12,7 +12,7 @@ const app = express();
 // Middlewares
 app.use(express.json());
 app.use(cors());
-app.use(helmet());
+app.use(helmet({ contentSecurityPolicy: false }));
 app.use(morgan("dev"));
 
 // REST API Routes
@@ -27,6 +27,7 @@ app.setupGraphQL = async () => {
   await server.start();
   app.use(
     "/graphql",
+    (req, res, next) => { req.body = req.body || {}; next() },
     expressMiddleware(server, {
       context: async ({ req }) => ({ req }),
     }),

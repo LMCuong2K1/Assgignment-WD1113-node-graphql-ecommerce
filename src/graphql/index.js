@@ -1,18 +1,15 @@
 const { ApolloServer } = require('@apollo/server');
+const categorySchema = require('./schemas/categorySchema');
 
 // Placeholder for typeDefs and resolvers
 // You will merge schemas and resolvers from their respective folders here
-const typeDefs = `#graphql
-  type Query {
-    hello: String
-  }
-`;
+const typeDefs = [
+  categorySchema.typeDefs
+];
 
-const resolvers = {
-  Query: {
-    hello: () => 'Hello from GraphQL',
-  },
-};
+const resolvers = [
+  categorySchema.resolvers
+];
 
 const createApolloServer = () => {
   return new ApolloServer({
