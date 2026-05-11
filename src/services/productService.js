@@ -2,9 +2,10 @@ const Product = require("../models/Product");
 
 class ProductService {
     createProduct = async (body) => {
-        return await Product.create(body);
+        const product = await Product.create(body);
+        return product.populate('category', 'name');
     }
-    findAllProducts = async (query) => {
+    findAllProducts = async (query, selectFields = "") => {
         const { search, category, minPrice, maxPrice, sort, page = 1, limit = 10 } = query;
         const filter = { isActive: true };
         if (category) filter.category = category;
@@ -17,13 +18,13 @@ class ProductService {
         //biểu thức chính quy
         if (search) filter.name = { $regex: search, $options: "i" };
         const skip = (Number(page) - 1) * Number(limit);
-        const products = await Product.find(filter).populate('category', 'name').sort(sort).skip(skip).limit(limit);
+        const products = await Product.find(filter).select(selectFields).populate('category', 'name').sort(sort).skip(skip).limit(limit);
         const count = await Product.countDocuments(filter);
         return { products, count };
 
     }
-    findProductById = async (id) => {
-        const product = await Product.findOne({ _id: id, isActive: true });
+    findProductById = async (id, selectFields = "") => {
+        const product = await Product.findOne({ _id: id, isActive: true }).select(selectFields);
         if (!product) throw new Error("Product is not exist!");
         return product.populate('category', 'name');
     }
@@ -48,7 +49,8 @@ class ProductService {
             if (duplicate) throw new Error("Name or SKU is already exists!");
         }
         Object.assign(product, body);
-        return await product.save();
+        const saveProduct = await product.save();
+        return saveProduct.populate('category', 'name');
     }
     deleteProduct = async (id) => {
         const product = await Product.findOne({ _id: id, isActive: true });
