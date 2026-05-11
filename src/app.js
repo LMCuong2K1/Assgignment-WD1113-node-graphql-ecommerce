@@ -6,7 +6,8 @@ const swaggerUi = require("swagger-ui-express");
 const swaggerSpecs = require("./swagger/swagger");
 const { expressMiddleware } = require("@apollo/server/express4");
 const createApolloServer = require("./graphql");
-
+const User = require("./models/User");
+const jwt = require("jsonwebtoken");
 const app = express();
 
 // Middlewares
@@ -29,7 +30,20 @@ app.setupGraphQL = async () => {
     "/graphql",
     (req, res, next) => { req.body = req.body || {}; next() },
     expressMiddleware(server, {
-      context: async ({ req }) => ({ req }),
+      context: async ({ req }) => {
+        let user = null;
+        if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
+          try {
+            const token = req.headers.authorization.split(" ")[1];
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            user = await User.findById(decoded.id);
+          }
+          catch (err) {
+            throw new Error("Invalid authentication token");
+          }
+        }
+        return { req, user };
+      },
     }),
   );
 };

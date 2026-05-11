@@ -1,7 +1,8 @@
 const graphqlFields = require("graphql-fields");
-const Product = require("../../models/Product");
 const productService = require("../../services/productService");
-const graphFields = require("graphql-fields");
+const checkAdmin = (context) => {
+    if (!context.user || context.user.role !== 'admin') throw new Error("Unauthorized!");
+};
 module.exports = {
     typeDefs: `#graphql
     type ProductImage{
@@ -75,15 +76,14 @@ module.exports = {
         updateProduct(id:ID!,input:ProductUpdateInput!):Product
         deleteProduct(id:ID!):Boolean
     }
-
-    }`,
+`,
     resolvers: {
         Query: {
             products: async (_, args, context, info) => {
                 //lấy trường đã chọn
                 const fieldsObj = graphqlFields(info);
                 //nối chuỗi các trường bên trên
-                const selectString = Object.keys(fieldsObj.products).join(" ");
+                const selectString = fieldsObj.products ? Object.keys(fieldsObj.products).join(" ") : "";
                 return await productService.findAllProducts(args.pagination || {}, selectString);
             },
             product: async (_, args, context, info) => {
@@ -93,14 +93,16 @@ module.exports = {
             }
         },
         Mutation: {
-
-            createProduct: async (_, args) => {
+            createProduct: async (_, args, context) => {
+                checkAdmin(context);
                 return await productService.createProduct(args.input);
             },
-            updateProduct: async (_, args) => {
+            updateProduct: async (_, args, context) => {
+                checkAdmin(context);
                 return await productService.updateProduct(args.id, args.input);
             },
-            deleteProduct: async (_, args) => {
+            deleteProduct: async (_, args, context) => {
+                checkAdmin(context);
                 await productService.deleteProduct(args.id);
                 return true;
             }

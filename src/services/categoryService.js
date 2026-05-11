@@ -36,15 +36,24 @@ class CategoryService {
     }
     return await category.updateOne({ isActive: false });
   };
-  getCategoryById = async (id) => {
-    const category = await Category.findOne({ _id: id, isActive: true });
+  getCategoryById = async (id, selectFields = "") => {
+    const category = await Category.findOne({ _id: id, isActive: true })
+      .select(selectFields)
+      .populate('parent', 'name')
+      .populate('children', 'name')
+      .lean();
     if (!category) {
       throw new Error("Không tìm thấy danh mục!");
     }
     return category;
   };
-  getCategories = async () => {
-    return Category.find({ isActive: true }).lean();
+  getCategories = async (selectFields = "") => {
+    return await Category.find({ isActive: true })
+      .select(selectFields)
+      .sort({ createdAt: -1 })
+      .populate('parent', 'name')
+      .populate('children', 'name')
+      .lean();
   };
 }
 module.exports = new CategoryService();

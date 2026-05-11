@@ -1,46 +1,75 @@
-// 1. IMPORT Model để dùng trong resolvers
-const Category = require("../../models/Category");
+const categoryService = require("../../services/categoryService");
+const graphqlFields = require("graphql-fields");
 
-// 2. KHAI BÁO SCHEMA (Bản đồ dữ liệu)
+const checkAdmin = (context) => {
+  if (!context.user || context.user.role !== 'admin') throw new Error("Unauthorized! Chỉ Admin mới có quyền thực hiện.");
+};
+
 module.exports = {
   typeDefs: `#graphql
-  # Mô tả cấu trúc dữ liệu của một Category
   type Category {
     _id: ID!
     name: String!
     description: String
+    parent: Category
+    children: [Category]
     slug: String!
+    isActive: Boolean
+    createdAt: String
+    updatedAt: String
+  }
+  input createCategoryInput {
+    name: String!
+    description: String
+    parent: ID
+  }
+
+  input updateCategoryInput {
+    name: String
+    description: String
+    parent: ID
     isActive: Boolean
   }
 
-  # BẮT BUỘC: Khai báo các hành động GET (Lấy dữ liệu)
   type Query {
-    # Hàm này trả về một mảng ([]) các Category
     categories: [Category]
+    category(id: ID!): Category
   }
 
-  # BẮT BUỘC: Khai báo các hành động POST/PUT/DELETE
   type Mutation {
-    # Hàm này nhận tham số name, description và trả về Category vừa tạo
-    createCategory(name: String!, description: String): Category
+    createCategory(input:createCategoryInput): Category
+    updateCategory(id: ID!, input:updateCategoryInput): Category
+    deleteCategory(id: ID!): Boolean
   }
 `,
 
-  // 3. THỰC THI LOGIC (Giống như Controller)
   resolvers: {
     Query: {
-      categories: async () => {
-        return await Category.find({ isActive: true });
+      categories: async (_, args, context, info) => {
+        const fieldsObj = graphqlFields(info);
+        const selectString = Object.keys(fieldsObj).join(" ");
+        return await categoryService.getCategories(selectString);
       },
+      category: async (_, args, context, info) => {
+        const fieldsObj = graphqlFields(info);
+        const selectString = Object.keys(fieldsObj).join(" ");
+        return await categoryService.getCategoryById(args.id, selectString);
+      }
     },
     Mutation: {
-      createCategory: async (_, args) => {
-        return await Category.create({
-          name: args.name,
-          description: args.description,
-        });
+      createCategory: async (_, args, context) => {
+        checkAdmin(context);
+        return await categoryService.createCategory(args.input);
       },
+      updateCategory: async (_, args, context) => {
+        checkAdmin(context);
+        return await categoryService.updateCategory(args.id, args.input);
+      },
+      deleteCategory: async (_, args, context) => {
+        checkAdmin(context);
+        await categoryService.deleteCategory(args.id);
+        return true;
+      }
     },
   }
 }
-
