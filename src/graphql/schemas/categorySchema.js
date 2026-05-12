@@ -2,7 +2,8 @@ const categoryService = require("../../services/categoryService");
 const graphqlFields = require("graphql-fields");
 
 const checkAdmin = (context) => {
-  if (!context.user || context.user.role !== 'admin') throw new Error("Unauthorized! Chỉ Admin mới có quyền thực hiện.");
+  if (!context.user || context.user.role !== "admin")
+    throw new Error("Unauthorized!");
 };
 
 module.exports = {
@@ -54,7 +55,7 @@ module.exports = {
         const fieldsObj = graphqlFields(info);
         const selectString = Object.keys(fieldsObj).join(" ");
         return await categoryService.getCategoryById(args.id, selectString);
-      }
+      },
     },
     Mutation: {
       createCategory: async (_, args, context) => {
@@ -69,7 +70,7 @@ module.exports = {
         checkAdmin(context);
         await categoryService.deleteCategory(args.id);
         return true;
-      }
+      },
     },
-  }
-}
+  },
+};
