@@ -3,11 +3,14 @@ const Product = require("../models/Product");
 
 class CartService {
   // Lấy giỏ hàng của user (tạo mới nếu chưa có)
-  getCart = async (userId) => {
-    let cart = await Cart.findOne({ user: userId }).populate(
-      "items.product",
-      "name price stock images slug"
-    );
+  getCart = async (
+    userId,
+    cartFields = "",
+    productFields = "name price stock images slug",
+  ) => {
+    let cart = await Cart.findOne({ user: userId })
+      .select(cartFields)
+      .populate("items.product", productFields);
 
     if (!cart) {
       cart = await Cart.create({ user: userId, items: [] });
@@ -17,7 +20,13 @@ class CartService {
   };
 
   // Thêm sản phẩm vào giỏ
-  addToCart = async (userId, productId, quantity) => {
+  addToCart = async (
+    userId,
+    productId,
+    quantity,
+    cartFields = "",
+    productFields = "name price stock images slug",
+  ) => {
     // Kiểm tra product tồn tại và còn hàng
     const product = await Product.findOne({ _id: productId, isActive: true });
     if (!product) throw new Error("Sản phẩm không tồn tại!");
@@ -35,7 +44,7 @@ class CartService {
     } else {
       // Đã có giỏ → kiểm tra sản phẩm đã trong giỏ chưa
       const existingItem = cart.items.find(
-        (item) => item.product.toString() === productId
+        (item) => item.product.toString() === productId,
       );
 
       if (existingItem) {
@@ -53,44 +62,56 @@ class CartService {
     }
 
     // Populate trả về cho client
-    return cart.populate("items.product", "name price stock images slug");
+    return cart.populate("items.product", productFields);
   };
 
   // Cập nhật số lượng sản phẩm trong giỏ
-  updateCartItem = async (userId, productId, quantity) => {
+  updateCartItem = async (
+    userId,
+    productId,
+    quantity,
+    cartFields = "",
+    productFields = "name price stock images slug",
+  ) => {
     const cart = await Cart.findOne({ user: userId });
     if (!cart) throw new Error("Giỏ hàng trống!");
 
     const item = cart.items.find(
-      (item) => item.product.toString() === productId
+      (item) => item.product.toString() === productId,
     );
     if (!item) throw new Error("Sản phẩm không có trong giỏ hàng!");
 
     // Kiểm tra tồn kho
-    const product = await Product.findById(productId);
+    const product = await Product.findOne({ _id: productId, isActive: true });
+    if (!product) throw new Error("Sản phẩm không tồn tại!");
     if (quantity > product.stock)
       throw new Error(`Sản phẩm chỉ còn ${product.stock} trong kho!`);
 
     item.quantity = quantity;
     await cart.save();
 
-    return cart.populate("items.product", "name price stock images slug");
+    return cart.populate("items.product", productFields);
   };
 
   // Xóa 1 sản phẩm khỏi giỏ
-  removeFromCart = async (userId, productId) => {
+  removeFromCart = async (
+    userId,
+    productId,
+    cartFields = "",
+    productFields = "name price stock images slug",
+  ) => {
     const cart = await Cart.findOne({ user: userId });
     if (!cart) throw new Error("Giỏ hàng trống!");
 
     const itemIndex = cart.items.findIndex(
-      (item) => item.product.toString() === productId
+      (item) => item.product.toString() === productId,
     );
     if (itemIndex === -1) throw new Error("Sản phẩm không có trong giỏ hàng!");
 
     cart.items.splice(itemIndex, 1);
     await cart.save();
 
-    return cart.populate("items.product", "name price stock images slug");
+    return cart.populate("items.product", productFields);
   };
 
   // Xóa toàn bộ giỏ hàng
