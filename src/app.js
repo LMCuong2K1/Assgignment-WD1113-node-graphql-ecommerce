@@ -59,7 +59,8 @@ app.setupGraphQL = async () => {
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
             user = await User.findById(decoded.id);
           } catch (err) {
-            throw new Error("Invalid authentication token");
+            // Token sai/hết hạn → user = null, để resolver tự kiểm tra quyền
+            user = null;
           }
         }
         return { req, user };
