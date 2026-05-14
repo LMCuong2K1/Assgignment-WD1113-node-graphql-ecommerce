@@ -1,5 +1,6 @@
 const Review = require("../models/Review");
 const Product = require("../models/Product");
+const mongoose = require("mongoose");
 
 class ReviewService {
   createReview = async (productId, userId, body) => {
@@ -14,7 +15,7 @@ class ReviewService {
       rating: body.rating,
       comment: body.comment,
     });
-
+    await this.updateProductStats(review.product);
     return review;
   };
 
@@ -40,7 +41,48 @@ class ReviewService {
     }
 
     await Review.findOneAndDelete({ _id: reviewId });
-    return review;
+    await this.updateProductStats(review.product);
+    return true;
+  };
+  updateReview = async (reviewId, userId, userRole, body) => {
+    const review = await Review.findById(reviewId);
+    if (!review) throw new Error("Không tìm thấy đánh giá!");
+    if (review.user.toString() !== userId && userRole !== "admin")
+      throw new Error("Bạn không có quyền cập nhật đánh giá này!");
+
+    const newReview = await Review.findOneAndUpdate(
+      {
+        _id: reviewId,
+      },
+      body,
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
+    await this.updateProductStats(newReview.product);
+    return newReview;
+  };
+  updateProductStats = async (productId) => {
+    const stats = await Review.aggregate([
+      { $match: { product: new mongoose.Types.ObjectId(productId) } },
+      {
+        $group: {
+          _id: "$product",
+          numReviews: { $sum: 1 },
+          avgRating: { $avg: "$rating" },
+        },
+      },
+    ]);
+
+    if (stats.length > 0) {
+      await Product.findByIdAndUpdate(productId, {
+        rating: Math.round(stats[0].avgRating * 10) / 10,
+        numReviews: stats[0].numReviews,
+      });
+    } else {
+      await Product.findByIdAndUpdate(productId, { rating: 0, numReviews: 0 });
+    }
   };
 }
 
