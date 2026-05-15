@@ -146,7 +146,7 @@ router.get("/profile", protect, AuthController.getProfile);
 /**
  * @swagger
  * /api/auth/profile:
- *   patch:
+ *   put:
  *     summary: Cập nhật thông tin profile
  *     tags: [Auth]
  *     security:
@@ -176,8 +176,8 @@ router.get("/profile", protect, AuthController.getProfile);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
- */
-router.patch(
+ *     */
+router.put(
   "/profile",
   protect,
   validate(updateUserProfileSchema),

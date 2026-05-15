@@ -58,8 +58,16 @@ const categories = [
     description: "Các loại điện thoại di động",
     isActive: true,
     children: [
-      { name: "iPhone", description: "Điện thoại Apple iPhone", isActive: true },
-      { name: "Samsung", description: "Điện thoại Samsung Galaxy", isActive: true },
+      {
+        name: "iPhone",
+        description: "Điện thoại Apple iPhone",
+        isActive: true,
+      },
+      {
+        name: "Samsung",
+        description: "Điện thoại Samsung Galaxy",
+        isActive: true,
+      },
     ],
   },
   {
@@ -77,7 +85,11 @@ const categories = [
     isActive: true,
     children: [
       { name: "Tai nghe", description: "Tai nghe các loại", isActive: true },
-      { name: "Sạc & Cáp", description: "Bộ sạc và cáp kết nối", isActive: true },
+      {
+        name: "Sạc & Cáp",
+        description: "Bộ sạc và cáp kết nối",
+        isActive: true,
+      },
     ],
   },
 ];
@@ -87,7 +99,8 @@ const productTemplates = [
   // ── iPhone ──
   {
     name: "iPhone 15 Pro Max",
-    description: "iPhone 15 Pro Max 256GB, chip A17 Pro, camera 48MP, khung Titanium",
+    description:
+      "iPhone 15 Pro Max 256GB, chip A17 Pro, camera 48MP, khung Titanium",
     price: 34990000,
     stock: 50,
     categorySlug: "iphone",
@@ -96,7 +109,8 @@ const productTemplates = [
   },
   {
     name: "iPhone 15",
-    description: "iPhone 15 128GB, chip A16 Bionic, Dynamic Island, camera 48MP",
+    description:
+      "iPhone 15 128GB, chip A16 Bionic, Dynamic Island, camera 48MP",
     price: 22990000,
     stock: 80,
     categorySlug: "iphone",
@@ -106,7 +120,8 @@ const productTemplates = [
   // ── Samsung ──
   {
     name: "Samsung Galaxy S24 Ultra",
-    description: "Galaxy S24 Ultra 256GB, chip Snapdragon 8 Gen 3, S-Pen, camera 200MP",
+    description:
+      "Galaxy S24 Ultra 256GB, chip Snapdragon 8 Gen 3, S-Pen, camera 200MP",
     price: 31990000,
     stock: 40,
     categorySlug: "samsung",
@@ -115,7 +130,8 @@ const productTemplates = [
   },
   {
     name: "Samsung Galaxy A55",
-    description: "Galaxy A55 128GB, màn hình Super AMOLED 6.6 inch, pin 5000mAh",
+    description:
+      "Galaxy A55 128GB, màn hình Super AMOLED 6.6 inch, pin 5000mAh",
     price: 9990000,
     stock: 120,
     categorySlug: "samsung",
@@ -125,7 +141,8 @@ const productTemplates = [
   // ── MacBook ──
   {
     name: "MacBook Pro 14 M3 Pro",
-    description: "MacBook Pro 14 inch, chip M3 Pro, RAM 18GB, SSD 512GB, Liquid Retina XDR",
+    description:
+      "MacBook Pro 14 inch, chip M3 Pro, RAM 18GB, SSD 512GB, Liquid Retina XDR",
     price: 49990000,
     stock: 25,
     categorySlug: "macbook",
@@ -134,7 +151,8 @@ const productTemplates = [
   },
   {
     name: "MacBook Air 15 M3",
-    description: "MacBook Air 15 inch, chip M3, RAM 8GB, SSD 256GB, siêu mỏng nhẹ",
+    description:
+      "MacBook Air 15 inch, chip M3, RAM 8GB, SSD 256GB, siêu mỏng nhẹ",
     price: 32990000,
     stock: 35,
     categorySlug: "macbook",
@@ -144,7 +162,8 @@ const productTemplates = [
   // ── Dell ──
   {
     name: "Dell XPS 15",
-    description: "Dell XPS 15, Intel Core i7-13700H, RAM 16GB, SSD 512GB, OLED 3.5K",
+    description:
+      "Dell XPS 15, Intel Core i7-13700H, RAM 16GB, SSD 512GB, OLED 3.5K",
     price: 42990000,
     stock: 20,
     categorySlug: "dell",
@@ -163,7 +182,8 @@ const productTemplates = [
   },
   {
     name: "Sony WH-1000XM5",
-    description: "Tai nghe chụp tai Sony WH-1000XM5, chống ồn hàng đầu, pin 30 giờ",
+    description:
+      "Tai nghe chụp tai Sony WH-1000XM5, chống ồn hàng đầu, pin 30 giờ",
     price: 8490000,
     stock: 45,
     categorySlug: "tai-nghe",
@@ -176,7 +196,7 @@ const productTemplates = [
     description: "Bộ sạc nhanh Apple 20W USB-C chính hãng",
     price: 590000,
     stock: 200,
-    categorySlug: "sac-cap",
+    categorySlug: "sac-and-cap",
     sku: "APPLE-20W",
     images: [{ url: "https://placehold.co/600x400?text=Apple+Charger+20W" }],
   },
@@ -249,7 +269,9 @@ const seedData = async () => {
       }
     }
     const totalCats = Object.keys(categoryMap).length;
-    console.log(`📂 Created ${totalCats} categories (${categories.length} parents + ${totalCats - categories.length} children)`);
+    console.log(
+      `📂 Created ${totalCats} categories (${categories.length} parents + ${totalCats - categories.length} children)`,
+    );
 
     // 4️⃣ Seed Products
     const productsToCreate = productTemplates.map((p) => ({
@@ -298,21 +320,50 @@ const seedData = async () => {
 
     // 7️⃣ Seed Orders
     const orderItems1 = [
-      { product: createdProducts[0]._id, quantity: 1, price: createdProducts[0].price },
-      { product: createdProducts[7]._id, quantity: 2, price: createdProducts[7].price },
+      {
+        product: createdProducts[0]._id,
+        quantity: 1,
+        price: createdProducts[0].price,
+      },
+      {
+        product: createdProducts[7]._id,
+        quantity: 2,
+        price: createdProducts[7].price,
+      },
     ];
-    const order1Total = orderItems1.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const order1Total = orderItems1.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0,
+    );
 
     const orderItems2 = [
-      { product: createdProducts[4]._id, quantity: 1, price: createdProducts[4].price },
+      {
+        product: createdProducts[4]._id,
+        quantity: 1,
+        price: createdProducts[4].price,
+      },
     ];
-    const order2Total = orderItems2.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const order2Total = orderItems2.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0,
+    );
 
     const orderItems3 = [
-      { product: createdProducts[2]._id, quantity: 1, price: createdProducts[2].price },
-      { product: createdProducts[9]._id, quantity: 3, price: createdProducts[9].price },
+      {
+        product: createdProducts[2]._id,
+        quantity: 1,
+        price: createdProducts[2].price,
+      },
+      {
+        product: createdProducts[9]._id,
+        quantity: 3,
+        price: createdProducts[9].price,
+      },
     ];
-    const order3Total = orderItems3.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const order3Total = orderItems3.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0,
+    );
 
     await Order.create([
       {

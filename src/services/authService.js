@@ -40,9 +40,15 @@ class AuthService {
     return user;
   };
 
-  getAllUsers = async () => {
-    return await User.find({});
-  };
+   getAllUsers = async () => {
+     return await User.find({});
+   };
+
+   getUserById = async (userId) => {
+     const user = await User.findById(userId);
+     if (!user) throw new Error("Không tìm thấy user!");
+     return user;
+   };
 
   updateUserByAdmin = async (userId, updateData) => {
     const user = await User.findById(userId);

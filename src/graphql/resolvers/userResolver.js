@@ -19,16 +19,21 @@ const checkAdmin = (context) => {
 };
 
 module.exports = {
-  Query: {
-    me: async (_, __, context) => {
-      const user = checkUser(context);
-      return await authService.getProfile(user._id);
+    Query: {
+      me: async (_, __, context) => {
+        const user = checkUser(context);
+        return await authService.getProfile(user._id);
+      },
+      users: async (_, __, context) => {
+        checkAdmin(context);
+        return await authService.getAllUsers();
+      },
+      user: async (_, args, context) => {
+        checkAdmin(context);
+        objectIdSchema.parse(args.id);
+        return await authService.getUserById(args.id);
+      },
     },
-    users: async (_, __, context) => {
-      checkAdmin(context);
-      return await authService.getAllUsers();
-    },
-  },
   Mutation: {
     register: async (_, args) => {
       registerSchema.parse({ body: args.input });

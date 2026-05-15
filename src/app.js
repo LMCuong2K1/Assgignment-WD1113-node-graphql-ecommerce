@@ -31,6 +31,9 @@ const limiter = rateLimit({
 
 app.use(limiter);
 
+// Health Check Route (không cần auth)
+app.use("/health", require("./routes/healthRoutes"));
+
 // REST API Routes
 app.use("/api", require("./routes/index"));
 
