@@ -109,7 +109,7 @@ const options = {
           properties: {
             name: { type: 'string', example: 'Điện thoại' },
             description: { type: 'string', example: 'Danh mục điện thoại' },
-            parent: { type: 'string', description: 'Parent category ID', example: '665a...' },
+            parent: { type: 'string', description: 'Parent category ID', example: '665a1b2c3d4e5f6a7b8c9d0e' },
           },
         },
         UpdateCategoryInput: {
@@ -156,7 +156,7 @@ const options = {
             description: { type: 'string', example: 'Flagship smartphone' },
             price: { type: 'number', example: 29990000 },
             stock: { type: 'integer', example: 100 },
-            category: { type: 'string', example: '665a...' },
+            category: { type: 'string', example: '665a1b2c3d4e5f6a7b8c9d0e' },
             sku: { type: 'string', example: 'IP15PRO-001' },
             images: { type: 'array', items: { $ref: '#/components/schemas/ProductImage' } },
           },
@@ -223,7 +223,7 @@ const options = {
           type: 'object',
           required: ['productId', 'quantity'],
           properties: {
-            productId: { type: 'string', example: '665a...' },
+            productId: { type: 'string', example: '665a1b2c3d4e5f6a7b8c9d0e' },
             quantity: { type: 'integer', minimum: 1, example: 1 },
           },
         },
@@ -231,7 +231,7 @@ const options = {
           type: 'object',
           required: ['productId', 'quantity'],
           properties: {
-            productId: { type: 'string', example: '665a...' },
+            productId: { type: 'string', example: '665a1b2c3d4e5f6a7b8c9d0e' },
             quantity: { type: 'integer', minimum: 1, example: 3 },
           },
         },
@@ -251,7 +251,7 @@ const options = {
             user: { type: 'string' },
             items: { type: 'array', items: { $ref: '#/components/schemas/OrderItem' } },
             totalPrice: { type: 'number', example: 59980000 },
-            status: { type: 'string', enum: ['pending', 'processing', 'shipped', 'delivered'], example: 'pending' },
+            status: { type: 'string', enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'], example: 'pending' },
             shippingAddress: { type: 'string', example: '123 Nguyen Hue, HCM' },
             createdAt: { type: 'string', format: 'date-time' },
             updatedAt: { type: 'string', format: 'date-time' },
@@ -268,7 +268,7 @@ const options = {
           type: 'object',
           required: ['status'],
           properties: {
-            status: { type: 'string', enum: ['pending', 'processing', 'shipped', 'delivered'], example: 'processing' },
+            status: { type: 'string', enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'], example: 'processing' },
           },
         },
         // ── Common ──
@@ -284,7 +284,33 @@ const options = {
           properties: {
             success: { type: 'boolean', example: false },
             message: { type: 'string' },
-            error: { type: 'string' },
+            errors: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  field: { type: 'string' },
+                  error: { type: 'string' },
+                },
+              },
+            },
+          },
+        },
+        ValidationError: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean', example: false },
+            message: { type: 'string' },
+            errors: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  field: { type: 'string' },
+                  error: { type: 'string' },
+                },
+              },
+            },
           },
         },
       },
