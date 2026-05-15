@@ -1,12 +1,21 @@
 const { ApolloServer } = require("@apollo/server");
+
+// Schemas (typeDefs only)
 const categorySchema = require("./schemas/categorySchema");
 const productSchema = require("./schemas/productSchema");
 const cartSchema = require("./schemas/cartSchema");
 const orderSchema = require("./schemas/orderSchema");
 const userSchema = require("./schemas/userSchema");
 const reviewSchema = require("./schemas/reviewSchema");
-// Placeholder for typeDefs and resolvers
-// You will merge schemas and resolvers from their respective folders here
+
+// Resolvers
+const categoryResolver = require("./resolvers/categoryResolver");
+const productResolver = require("./resolvers/productResolver");
+const cartResolver = require("./resolvers/cartResolver");
+const orderResolver = require("./resolvers/orderResolver");
+const userResolver = require("./resolvers/userResolver");
+const reviewResolver = require("./resolvers/reviewResolver");
+
 const typeDefs = [
   userSchema.typeDefs,
   categorySchema.typeDefs,
@@ -17,12 +26,12 @@ const typeDefs = [
 ];
 
 const resolvers = [
-  userSchema.resolvers,
-  categorySchema.resolvers,
-  productSchema.resolvers,
-  cartSchema.resolvers,
-  orderSchema.resolvers,
-  reviewSchema.resolvers,
+  userResolver,
+  categoryResolver,
+  productResolver,
+  cartResolver,
+  orderResolver,
+  reviewResolver,
 ];
 
 const createApolloServer = () => {
