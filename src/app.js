@@ -74,10 +74,11 @@ app.setupGraphQL = async () => {
 
 // Global Error Handler
 app.use((err, req, res, next) => {
+  const statusCode = err.statusCode || err.status || 500;
   logger.error(`[${req.method}] ${req.originalUrl} - ${err.message}`, err);
-  res.status(err.status || 500).json({
+  res.status(statusCode).json({
     success: false,
-    message: err.message || "Internal Server Error",
+    message: statusCode === 500 ? "Internal Server Error" : err.message,
   });
 });
 

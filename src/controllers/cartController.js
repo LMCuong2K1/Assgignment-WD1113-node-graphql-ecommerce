@@ -1,88 +1,49 @@
+const catchAsync = require("../utils/catchAsync");
 const cartService = require("../services/cartService");
 
 class CartController {
-  // [GET] /api/cart
-  getCart = async (req, res) => {
-    try {
-      const cart = await cartService.getCart(req.user._id);
-      return res.status(200).json({
-        success: true,
-        data: cart,
-      });
-    } catch (error) {
-      return res.status(400).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  };
+  getCart = catchAsync(async (req, res) => {
+    const cart = await cartService.getCart(req.user._id);
+    return res.status(200).json({
+      success: true,
+      data: cart,
+    });
+  });
 
-  // [POST] /api/cart/add
-  addToCart = async (req, res) => {
-    try {
-      const { productId, quantity } = req.body;
-      const cart = await cartService.addToCart(req.user._id, productId, quantity);
-      return res.status(200).json({
-        success: true,
-        data: cart,
-      });
-    } catch (error) {
-      return res.status(400).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  };
+  addToCart = catchAsync(async (req, res) => {
+    const { productId, quantity } = req.body;
+    const cart = await cartService.addToCart(req.user._id, productId, quantity);
+    return res.status(200).json({
+      success: true,
+      data: cart,
+    });
+  });
 
-  // [PUT] /api/cart/update
-  updateCartItem = async (req, res) => {
-    try {
-      const { productId, quantity } = req.body;
-      const cart = await cartService.updateCartItem(req.user._id, productId, quantity);
-      return res.status(200).json({
-        success: true,
-        data: cart,
-      });
-    } catch (error) {
-      return res.status(400).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  };
+  updateCartItem = catchAsync(async (req, res) => {
+    const { productId, quantity } = req.body;
+    const cart = await cartService.updateCartItem(req.user._id, productId, quantity);
+    return res.status(200).json({
+      success: true,
+      data: cart,
+    });
+  });
 
-  // [DELETE] /api/cart/remove/:productId
-  removeFromCart = async (req, res) => {
-    try {
-      const cart = await cartService.removeFromCart(req.user._id, req.params.productId);
-      return res.status(200).json({
-        success: true,
-        data: cart,
-      });
-    } catch (error) {
-      return res.status(400).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  };
+  removeFromCart = catchAsync(async (req, res) => {
+    const cart = await cartService.removeFromCart(req.user._id, req.params.productId);
+    return res.status(200).json({
+      success: true,
+      data: cart,
+    });
+  });
 
-  // [DELETE] /api/cart/clear
-  clearCart = async (req, res) => {
-    try {
-      const cart = await cartService.clearCart(req.user._id);
-      return res.status(200).json({
-        success: true,
-        message: "Đã xóa toàn bộ giỏ hàng!",
-        data: cart,
-      });
-    } catch (error) {
-      return res.status(400).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  };
+  clearCart = catchAsync(async (req, res) => {
+    const cart = await cartService.clearCart(req.user._id);
+    return res.status(200).json({
+      success: true,
+      message: "Đã xóa toàn bộ giỏ hàng!",
+      data: cart,
+    });
+  });
 }
 
 module.exports = new CartController();

@@ -1,81 +1,47 @@
+const catchAsync = require("../utils/catchAsync");
 const productService = require("../services/productService");
 
 class ProductController {
-    createProduct = async (req, res) => {
-        try {
-            const product = await productService.createProduct(req.body);
-            return res.status(201).json({
-                success: true,
-                data: product
-            });
-        } catch (error) {
-            return res.status(400).json({
-                success: false,
-                message: error.message
-            });
-        }
-    }
+  createProduct = catchAsync(async (req, res) => {
+    const product = await productService.createProduct(req.body);
+    return res.status(201).json({
+      success: true,
+      data: product,
+    });
+  });
 
-    getProducts = async (req, res) => {
-        try {
-            const { products, count } = await productService.findAllProducts(req.query);
-            return res.status(200).json({
-                success: true,
-                count,
-                data: products
-            });
-        } catch (error) {
-            return res.status(400).json({
-                success: false,
-                message: error.message
-            });
-        }
-    }
+  getProducts = catchAsync(async (req, res) => {
+    const { products, count } = await productService.findAllProducts(req.query);
+    return res.status(200).json({
+      success: true,
+      count,
+      data: products,
+    });
+  });
 
-    getProductById = async (req, res) => {
-        try {
-            const product = await productService.findProductById(req.params.id);
-            return res.status(200).json({
-                success: true,
-                data: product
-            });
-        } catch (error) {
-            return res.status(400).json({
-                success: false,
-                message: error.message
-            });
-        }
-    }
+  getProductById = catchAsync(async (req, res) => {
+    const product = await productService.findProductById(req.params.id);
+    return res.status(200).json({
+      success: true,
+      data: product,
+    });
+  });
 
-    updateProduct = async (req, res) => {
-        try {
-            const product = await productService.updateProduct(req.params.id, req.body);
-            return res.status(200).json({
-                success: true,
-                data: product
-            });
-        } catch (error) {
-            return res.status(400).json({
-                success: false,
-                message: error.message
-            });
-        }
-    }
+  updateProduct = catchAsync(async (req, res) => {
+    const product = await productService.updateProduct(req.params.id, req.body);
+    return res.status(200).json({
+      success: true,
+      data: product,
+    });
+  });
 
-    deleteProduct = async (req, res) => {
-        try {
-            await productService.deleteProduct(req.params.id);
-            return res.status(200).json({
-                success: true,
-                message: "Xóa sản phẩm thành công"
-            });
-        } catch (error) {
-            return res.status(400).json({
-                success: false,
-                message: error.message
-            });
-        }
-    }
+  deleteProduct = catchAsync(async (req, res) => {
+    await productService.deleteProduct(req.params.id);
+    return res.status(200).json({
+      success: true,
+      message: "Xóa sản phẩm thành công",
+    });
+  });
 }
 
 module.exports = new ProductController();

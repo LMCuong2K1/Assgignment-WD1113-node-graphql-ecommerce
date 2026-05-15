@@ -1,4 +1,5 @@
 const Product = require("../models/Product");
+const AppError = require("../utils/AppError");
 
 class ProductService {
     createProduct = async (body) => {
@@ -25,19 +26,19 @@ class ProductService {
     }
     findProductById = async (id, selectFields = "") => {
         const product = await Product.findOne({ _id: id, isActive: true }).select(selectFields);
-        if (!product) throw new Error("Product is not exist!");
+        if (!product) throw new AppError("Product is not exist!",404);
         return product.populate('category', 'name');
     }
     updateProduct = async (id, body) => {
         const product = await Product.findOne({ _id: id, isActive: true });
-        if (!product) throw new Error("Product is not exist!");
+        if (!product) throw new AppError("Product is not exist!",404);
 
         if (body.name || body.sku) {
             const conditions = [];
             if (body.name) conditions.push({ name: body.name });
             if (body.sku) conditions.push({ sku: body.sku });
             const duplicate = await Product.findOne({ _id: { $ne: id }, $or: conditions, isActive: true });
-            if (duplicate) throw new Error("Name or SKU is already exists!");
+            if (duplicate) throw new AppError("Name or SKU is already exists!",409);
         }
         Object.assign(product, body);
         const saveProduct = await product.save();
@@ -45,7 +46,7 @@ class ProductService {
     }
     deleteProduct = async (id) => {
         const product = await Product.findOne({ _id: id, isActive: true });
-        if (!product) throw new Error("Không tìm thấy Product!");
+        if (!product) throw new AppError("Không tìm thấy Product!",404);
         await product.updateOne({ isActive: false });
     }
 }

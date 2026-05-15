@@ -1,90 +1,52 @@
+const catchAsync = require("../utils/catchAsync");
 const reviewService = require("../services/reviewService");
 
 class ReviewController {
-  // [POST] /api/products/:id/reviews
-  createReview = async (req, res) => {
-    try {
-      const review = await reviewService.createReview(
-        req.params.id,
-        req.user._id,
-        req.body
-      );
-      return res.status(201).json({
-        success: true,
-        data: review,
-      });
-    } catch (error) {
-      // Xử lý lỗi duplicate key (user đã review sản phẩm này rồi)
-      if (error.code === 11000) {
-        return res.status(400).json({
-          success: false,
-          message: "Bạn đã đánh giá sản phẩm này rồi!",
-        });
-      }
-      return res.status(400).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  };
+  createReview = catchAsync(async (req, res) => {
+    const review = await reviewService.createReview(
+      req.params.id,
+      req.user._id,
+      req.body
+    );
+    return res.status(201).json({
+      success: true,
+      data: review,
+    });
+  });
 
-  // [GET] /api/products/:id/reviews
-  getProductReviews = async (req, res) => {
-    try {
-      const reviews = await reviewService.getProductReviews(req.params.id);
-      return res.status(200).json({
-        success: true,
-        count: reviews.length,
-        data: reviews,
-      });
-    } catch (error) {
-      return res.status(400).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  };
+  getProductReviews = catchAsync(async (req, res) => {
+    const reviews = await reviewService.getProductReviews(req.params.id);
+    return res.status(200).json({
+      success: true,
+      count: reviews.length,
+      data: reviews,
+    });
+  });
 
-  // [PUT] /api/products/:id/reviews/:reviewId
-  updateReview = async (req, res) => {
-    try {
-      const review = await reviewService.updateReview(
-        req.params.reviewId,
-        req.user._id.toString(),
-        req.user.role,
-        req.body
-      );
-      return res.status(200).json({
-        success: true,
-        data: review,
-      });
-    } catch (error) {
-      return res.status(400).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  };
+  updateReview = catchAsync(async (req, res) => {
+    const review = await reviewService.updateReview(
+      req.params.reviewId,
+      req.user._id.toString(),
+      req.user.role,
+      req.body
+    );
+    return res.status(200).json({
+      success: true,
+      data: review,
+    });
+  });
 
-  // [DELETE] /api/products/:id/reviews/:reviewId
-  deleteReview = async (req, res) => {
-    try {
-      await reviewService.deleteReview(
-        req.params.reviewId,
-        req.user._id.toString(),
-        req.user.role
-      );
-      return res.status(200).json({
-        success: true,
-        message: "Xóa đánh giá thành công!",
-      });
-    } catch (error) {
-      return res.status(400).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  };
+  deleteReview = catchAsync(async (req, res) => {
+    await reviewService.deleteReview(
+      req.params.reviewId,
+      req.user._id.toString(),
+      req.user.role
+    );
+    return res.status(200).json({
+      success: true,
+      message: "Xóa đánh giá thành công!",
+    });
+  });
 }
 
 module.exports = new ReviewController();

@@ -1,6 +1,7 @@
 const Order = require("../models/Order");
 const Cart = require("../models/Cart");
 const Product = require("../models/Product");
+const AppError = require("../utils/AppError");
 
 class OrderService {
   // Tạo đơn hàng từ giỏ hàng
@@ -11,14 +12,14 @@ class OrderService {
       "name price stock isActive"
     );
     if (!cart || cart.items.length === 0)
-      throw new Error("Giỏ hàng trống, không thể đặt hàng!");
+      throw new AppError("Giỏ hàng trống, không thể đặt hàng!",400);
 
     // 2. Kiểm tra & trừ tồn kho bằng Atomic Update (chống race condition)
     const orderItems = [];
     for (const item of cart.items) {
       // Kiểm tra sản phẩm còn active không
       if (!item.product.isActive) {
-        throw new Error(`Sản phẩm "${item.product.name}" đã ngừng bán!`);
+        throw new AppError(`Sản phẩm "${item.product.name}" đã ngừng bán!`,400);
       }
 
       // Atomic: Chỉ trừ stock nếu stock >= quantity
@@ -35,8 +36,8 @@ class OrderService {
             $inc: { stock: rolled.quantity },
           });
         }
-        throw new Error(
-          `Sản phẩm "${item.product.name}" không đủ hàng trong kho!`
+        throw new AppError(
+          `Sản phẩm "${item.product.name}" không đủ hàng trong kho!`,400
         );
       }
 
@@ -84,11 +85,11 @@ class OrderService {
     const order = await Order.findById(orderId)
       .populate("user", "name email")
       .populate("items.product", "name price images slug");
-    if (!order) throw new Error("Không tìm thấy đơn hàng!");
+    if (!order) throw new AppError("Không tìm thấy đơn hàng!", 404);
 
     // User thường chỉ xem được đơn của mình
     if (userRole !== "admin" && order.user.toString() !== userId) {
-      throw new Error("Bạn không có quyền xem đơn hàng này!");
+      throw new AppError("Bạn không có quyền xem đơn hàng này!",403);
     }
 
     return order;
@@ -97,13 +98,13 @@ class OrderService {
   // Admin cập nhật trạng thái đơn hàng
   updateOrderStatus = async (orderId, status) => {
     const order = await Order.findById(orderId);
-    if (!order) throw new Error("Không tìm thấy đơn hàng!");
+    if (!order) throw new AppError("Không tìm thấy đơn hàng!",404);
 
     // Kiểm tra logic chuyển trạng thái (chỉ đi theo thứ tự)
     if (status === "cancelled") {
       if (order.status === "shipped" || order.status === "delivered") {
-        throw new Error(
-          `Không thể hủy đơn hàng đã "${order.status}"!`
+        throw new AppError(
+          `Không thể hủy đơn hàng đã "${order.status}"!`,400
         );
       }
     } else {
@@ -112,8 +113,8 @@ class OrderService {
       const newIndex = statusFlow.indexOf(status);
 
       if (newIndex <= currentIndex) {
-        throw new Error(
-          `Không thể chuyển từ "${order.status}" sang "${status}"!`
+        throw new AppError(
+          `Không thể chuyển từ "${order.status}" sang "${status}"!`,400
         );
       }
     }
