@@ -2,19 +2,17 @@ const Cart = require("../models/Cart");
 const Product = require("../models/Product");
 
 class CartService {
-  // Lấy giỏ hàng của user (tạo mới nếu chưa có)
+  // Lấy giỏ hàng của user (đã được tạo sẵn khi đăng ký)
   getCart = async (
     userId,
     cartFields = "",
     productFields = "name price stock images slug",
   ) => {
-    let cart = await Cart.findOne({ user: userId })
+    const cart = await Cart.findOne({ user: userId })
       .select(cartFields)
       .populate("items.product", productFields);
 
-    if (!cart) {
-      cart = await Cart.create({ user: userId, items: [] });
-    }
+    if (!cart) throw new Error("Không tìm thấy giỏ hàng!");
 
     return cart;
   };
@@ -33,33 +31,26 @@ class CartService {
     if (product.stock < quantity)
       throw new Error(`Sản phẩm chỉ còn ${product.stock} trong kho!`);
 
-    let cart = await Cart.findOne({ user: userId });
+    const cart = await Cart.findOne({ user: userId });
+    if (!cart) throw new Error("Không tìm thấy giỏ hàng!");
 
-    if (!cart) {
-      // Chưa có giỏ → tạo mới luôn
-      cart = await Cart.create({
-        user: userId,
-        items: [{ product: productId, quantity }],
-      });
+    // Kiểm tra sản phẩm đã trong giỏ chưa
+    const existingItem = cart.items.find(
+      (item) => item.product.toString() === productId,
+    );
+
+    if (existingItem) {
+      // Đã có → cộng dồn số lượng
+      const newQty = existingItem.quantity + quantity;
+      if (newQty > product.stock)
+        throw new Error(`Sản phẩm chỉ còn ${product.stock} trong kho!`);
+      existingItem.quantity = newQty;
     } else {
-      // Đã có giỏ → kiểm tra sản phẩm đã trong giỏ chưa
-      const existingItem = cart.items.find(
-        (item) => item.product.toString() === productId,
-      );
-
-      if (existingItem) {
-        // Đã có → cộng dồn số lượng
-        const newQty = existingItem.quantity + quantity;
-        if (newQty > product.stock)
-          throw new Error(`Sản phẩm chỉ còn ${product.stock} trong kho!`);
-        existingItem.quantity = newQty;
-      } else {
-        // Chưa có → thêm item mới vào mảng
-        cart.items.push({ product: productId, quantity });
-      }
-
-      await cart.save();
+      // Chưa có → thêm item mới vào mảng
+      cart.items.push({ product: productId, quantity });
     }
+
+    await cart.save();
 
     // Populate trả về cho client
     return cart.populate("items.product", productFields);

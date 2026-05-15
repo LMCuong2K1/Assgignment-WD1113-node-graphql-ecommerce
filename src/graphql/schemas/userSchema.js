@@ -1,12 +1,19 @@
 const authService = require("../../services/authService");
+const {
+  registerSchema,
+  loginSchema,
+  updateUserProfileSchema,
+  updateUserByAdminSchema,
+} = require("../../utils/user.validation");
+const { objectIdSchema } = require("../../utils/validators");
 
 const checkUser = (context) => {
-  if (!context.user) throw new Error("Unauthorized");
+  if (!context.user) throw new Error("Bạn chưa đăng nhập!");
   return context.user;
 };
 const checkAdmin = (context) => {
   if (!context.user || context.user.role !== "admin")
-    throw new Error("Unauthorized");
+    throw new Error("Bạn không có quyền thực hiện chức năng này!");
   return context.user;
 };
 
@@ -19,6 +26,8 @@ module.exports = {
     name:String!
     email:String!
     role:Role!
+    phone:String
+    address:String
     }
     type AuthPayload { user: User!, token: String! }
     input RegisterInput {
@@ -32,12 +41,16 @@ module.exports = {
 }
     input UpdateProfileInput { 
         name:String
+        phone:String
+        address:String
     }
     input UpdateUserByAdminInput {
         role:Role
         name:String
         email:String
         password:String
+        phone:String
+        address:String
     }
 
     type Query {
@@ -64,17 +77,22 @@ module.exports = {
     },
     Mutation: {
       register: async (_, args) => {
+        registerSchema.parse({ body: args.input });
         return await authService.register(args.input);
       },
       login: async (_, args) => {
+        loginSchema.parse({ body: args.input });
         return await authService.login(args.input);
       },
       updateProfile: async (_, args, context) => {
         checkUser(context);
+        updateUserProfileSchema.parse({ body: args.input });
         return await authService.updateProfile(context.user._id, args.input);
       },
       updateUserByAdmin: async (_, args, context) => {
         checkAdmin(context);
+        objectIdSchema.parse(args.id);
+        updateUserByAdminSchema.parse({ body: args.input });
         return await authService.updateUserByAdmin(args.id, args.input);
       },
     },

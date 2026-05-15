@@ -1,6 +1,7 @@
 const graphqlFields = require("graphql-fields");
 const cartService = require("../../services/cartService");
 const { cartItemInputSchema } = require("../../utils/cart.validation");
+const { objectIdSchema } = require("../../utils/validators");
 
 const cartFieldSelect = (info) => {
   const fieldsObj = graphqlFields(info);
@@ -103,6 +104,7 @@ type Mutation{
       },
       removeFromCart: async (_, args, context, info) => {
         userCheck(context);
+        objectIdSchema.parse(args.input.productId);
         const { cartFields, productFields } = cartFieldSelect(info);
         return await cartService.removeFromCart(
           context.user.id,
