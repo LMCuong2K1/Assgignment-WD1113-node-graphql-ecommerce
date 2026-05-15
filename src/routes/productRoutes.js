@@ -106,17 +106,7 @@ router.post("/", protect, admin, validate(createProductSchema), productControlle
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 count:
- *                   type: integer
- *                 data:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Product'
+ *               $ref: '#/components/schemas/ProductListResponse'
  */
 router.get("/", productController.getProducts);
 

@@ -1,5 +1,7 @@
 const swaggerJsdoc = require('swagger-jsdoc');
 
+const idExample = '665a1b2c3d4e5f6a7b8c9d0e';
+
 const options = {
   definition: {
     openapi: '3.0.0',
@@ -8,47 +10,25 @@ const options = {
       version: '1.0.0',
       description: 'API documentation for the ShopOnline E-Commerce platform (REST & GraphQL)',
     },
-    servers: [
-      {
-        url: 'http://localhost:5000',
-        description: 'Development server',
-      },
-    ],
+    servers: [{ url: 'http://localhost:5000', description: 'Development server' }],
     components: {
       securitySchemes: {
-        bearerAuth: {
-          type: 'http',
-          scheme: 'bearer',
-          bearerFormat: 'JWT',
-        },
+        bearerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
       },
       schemas: {
-        // ── User ──
-        User: {
-          type: 'object',
-          properties: {
-            _id: { type: 'string', example: '665a1b2c3d4e5f6a7b8c9d0e' },
-            name: { type: 'string', example: 'Nguyen Van A' },
-            email: { type: 'string', format: 'email', example: 'user@example.com' },
-            role: { type: 'string', enum: ['user', 'admin'], example: 'user' },
-            phone: { type: 'string', example: '0901234567' },
-            address: { type: 'string', example: '123 Nguyen Hue, HCM' },
-            createdAt: { type: 'string', format: 'date-time' },
-            updatedAt: { type: 'string', format: 'date-time' },
-          },
-        },
+        // ── Auth ──
         RegisterInput: {
           type: 'object',
           required: ['name', 'email', 'password'],
           properties: {
-            name: { type: 'string', minLength: 2, example: 'Nguyen Van A' },
+            name: { type: 'string', example: 'Nguyen Van A' },
             email: { type: 'string', format: 'email', example: 'user@example.com' },
             password: { type: 'string', minLength: 6, example: 'password123' },
           },
         },
         LoginInput: {
           type: 'object',
-          description: 'Email: admin@shoponline.com / Password: admin123',
+          description: 'Admin: admin@shoponline.com / admin123',
           required: ['email', 'password'],
           properties: {
             email: { type: 'string', format: 'email', example: 'admin@shoponline.com' },
@@ -62,12 +42,26 @@ const options = {
             data: {
               type: 'object',
               properties: {
-                _id: { type: 'string' },
-                name: { type: 'string' },
-                email: { type: 'string' },
-                token: { type: 'string' },
+                _id: { type: 'string', example: idExample },
+                name: { type: 'string', example: 'Nguyen Van A' },
+                email: { type: 'string', example: 'user@example.com' },
+                token: { type: 'string', example: 'eyJhbGciOiJIUzI1NiIs...' },
               },
             },
+          },
+        },
+        // ── User ──
+        User: {
+          type: 'object',
+          properties: {
+            _id: { type: 'string', example: idExample },
+            name: { type: 'string', example: 'Nguyen Van A' },
+            email: { type: 'string', example: 'user@example.com' },
+            role: { type: 'string', enum: ['user', 'admin'], example: 'user' },
+            phone: { type: 'string', example: '0901234567' },
+            address: { type: 'string', example: '123 Nguyen Hue, HCM' },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time' },
           },
         },
         UpdateProfileInput: {
@@ -76,7 +70,6 @@ const options = {
             name: { type: 'string', example: 'Nguyen Van B' },
             phone: { type: 'string', example: '0909876543' },
             address: { type: 'string', example: '456 Le Loi, HCM' },
-            password: { type: 'string', minLength: 6, example: 'newpass123' },
           },
         },
         UpdateUserByAdminInput: {
@@ -87,18 +80,35 @@ const options = {
             role: { type: 'string', enum: ['user', 'admin'] },
             phone: { type: 'string' },
             address: { type: 'string' },
+            password: { type: 'string', minLength: 6 },
           },
         },
         // ── Category ──
         Category: {
           type: 'object',
           properties: {
-            _id: { type: 'string' },
+            _id: { type: 'string', example: idExample },
             name: { type: 'string', example: 'Điện thoại' },
             description: { type: 'string', example: 'Danh mục điện thoại di động' },
             slug: { type: 'string', example: 'dien-thoai' },
-            parent: { type: 'string', nullable: true },
-            children: { type: 'array', items: { type: 'string' } },
+            parent: {
+              type: 'object',
+              nullable: true,
+              properties: {
+                _id: { type: 'string', example: idExample },
+                name: { type: 'string', example: 'Danh mục cha' },
+              },
+            },
+            children: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  _id: { type: 'string', example: idExample },
+                  name: { type: 'string', example: 'Danh mục con' },
+                },
+              },
+            },
             isActive: { type: 'boolean', example: true },
             createdAt: { type: 'string', format: 'date-time' },
             updatedAt: { type: 'string', format: 'date-time' },
@@ -110,7 +120,7 @@ const options = {
           properties: {
             name: { type: 'string', example: 'Điện thoại' },
             description: { type: 'string', example: 'Danh mục điện thoại' },
-            parent: { type: 'string', description: 'Parent category ID', example: '665a1b2c3d4e5f6a7b8c9d0e' },
+            parent: { type: 'string', description: 'Category ID cha (nếu có)', example: idExample },
           },
         },
         UpdateCategoryInput: {
@@ -126,40 +136,70 @@ const options = {
         ProductImage: {
           type: 'object',
           properties: {
-            url: { type: 'string', example: 'https://example.com/img.jpg' },
-            public_id: { type: 'string', example: 'products/img1' },
+            url: { type: 'string', example: 'https://placehold.co/600x400?text=iPhone+15' },
+            public_id: { type: 'string', example: 'products/iphone15' },
           },
         },
         Product: {
           type: 'object',
           properties: {
-            _id: { type: 'string' },
-            name: { type: 'string', example: 'iPhone 15 Pro' },
-            description: { type: 'string' },
-            price: { type: 'number', example: 29990000 },
-            stock: { type: 'integer', example: 100 },
-            category: { type: 'string' },
+            _id: { type: 'string', example: idExample },
+            name: { type: 'string', example: 'iPhone 15 Pro Max' },
+            description: { type: 'string', example: 'iPhone 15 Pro Max 256GB, chip A17 Pro' },
+            price: { type: 'number', example: 34990000 },
+            stock: { type: 'integer', example: 50 },
+            category: {
+              type: 'object',
+              properties: {
+                _id: { type: 'string', example: idExample },
+                name: { type: 'string', example: 'iPhone' },
+              },
+            },
             images: { type: 'array', items: { $ref: '#/components/schemas/ProductImage' } },
-            isActive: { type: 'boolean' },
-            slug: { type: 'string', example: 'iphone-15-pro' },
-            sku: { type: 'string', example: 'IP15PRO-001' },
+            isActive: { type: 'boolean', example: true },
+            slug: { type: 'string', example: 'iphone-15-pro-max' },
+            sku: { type: 'string', example: 'IP15PM-256' },
             rating: { type: 'number', example: 4.5 },
             numReviews: { type: 'integer', example: 12 },
             createdAt: { type: 'string', format: 'date-time' },
             updatedAt: { type: 'string', format: 'date-time' },
           },
         },
+        ProductListResponse: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean', example: true },
+            count: { type: 'integer', example: 10 },
+            totalPages: { type: 'integer', example: 2 },
+            page: { type: 'integer', example: 1 },
+            limit: { type: 'integer', example: 5 },
+            data: {
+              type: 'array',
+              items: { $ref: '#/components/schemas/Product' },
+            },
+          },
+        },
         CreateProductInput: {
           type: 'object',
           required: ['name', 'description', 'price', 'stock', 'category', 'sku'],
           properties: {
-            name: { type: 'string', example: 'iPhone 15 Pro' },
-            description: { type: 'string', example: 'Flagship smartphone' },
-            price: { type: 'number', example: 29990000 },
-            stock: { type: 'integer', example: 100 },
-            category: { type: 'string', example: '665a1b2c3d4e5f6a7b8c9d0e' },
-            sku: { type: 'string', example: 'IP15PRO-001' },
-            images: { type: 'array', items: { $ref: '#/components/schemas/ProductImage' } },
+            name: { type: 'string', example: 'iPhone 15 Pro Max' },
+            description: { type: 'string', example: 'Flagship smartphone cao cấp nhất' },
+            price: { type: 'number', example: 34990000 },
+            stock: { type: 'integer', example: 50 },
+            category: { type: 'string', description: 'Category ID', example: idExample },
+            sku: { type: 'string', example: 'IP15PM-256' },
+            images: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  url: { type: 'string', example: 'https://placehold.co/600x400?text=Product' },
+                  public_id: { type: 'string', example: 'products/img1' },
+                },
+              },
+            },
+            isActive: { type: 'boolean', example: true },
           },
         },
         UpdateProductInput: {
@@ -171,6 +211,7 @@ const options = {
             stock: { type: 'integer' },
             category: { type: 'string' },
             images: { type: 'array', items: { $ref: '#/components/schemas/ProductImage' } },
+            sku: { type: 'string' },
             isActive: { type: 'boolean' },
           },
         },
@@ -178,9 +219,16 @@ const options = {
         Review: {
           type: 'object',
           properties: {
-            _id: { type: 'string' },
-            user: { type: 'string' },
-            product: { type: 'string' },
+            _id: { type: 'string', example: idExample },
+            user: {
+              type: 'object',
+              properties: {
+                _id: { type: 'string', example: idExample },
+                name: { type: 'string', example: 'Nguyen Van A' },
+                email: { type: 'string', example: 'user@example.com' },
+              },
+            },
+            product: { type: 'string', example: idExample },
             rating: { type: 'integer', minimum: 1, maximum: 5, example: 5 },
             comment: { type: 'string', example: 'Sản phẩm rất tốt!' },
             createdAt: { type: 'string', format: 'date-time' },
@@ -206,15 +254,25 @@ const options = {
         CartItem: {
           type: 'object',
           properties: {
-            product: { type: 'string' },
+            product: {
+              type: 'object',
+              properties: {
+                _id: { type: 'string', example: idExample },
+                name: { type: 'string', example: 'iPhone 15 Pro Max' },
+                price: { type: 'number', example: 34990000 },
+                stock: { type: 'integer', example: 50 },
+                images: { type: 'array', items: { $ref: '#/components/schemas/ProductImage' } },
+                slug: { type: 'string', example: 'iphone-15-pro-max' },
+              },
+            },
             quantity: { type: 'integer', minimum: 1, example: 2 },
           },
         },
         Cart: {
           type: 'object',
           properties: {
-            _id: { type: 'string' },
-            user: { type: 'string' },
+            _id: { type: 'string', example: idExample },
+            user: { type: 'string', example: idExample },
             items: { type: 'array', items: { $ref: '#/components/schemas/CartItem' } },
             createdAt: { type: 'string', format: 'date-time' },
             updatedAt: { type: 'string', format: 'date-time' },
@@ -224,15 +282,15 @@ const options = {
           type: 'object',
           required: ['productId', 'quantity'],
           properties: {
-            productId: { type: 'string', example: '665a1b2c3d4e5f6a7b8c9d0e' },
-            quantity: { type: 'integer', minimum: 1, example: 1 },
+            productId: { type: 'string', description: 'Product ID', example: idExample },
+            quantity: { type: 'integer', minimum: 1, example: 2 },
           },
         },
         UpdateCartItemInput: {
           type: 'object',
           required: ['productId', 'quantity'],
           properties: {
-            productId: { type: 'string', example: '665a1b2c3d4e5f6a7b8c9d0e' },
+            productId: { type: 'string', description: 'Product ID', example: idExample },
             quantity: { type: 'integer', minimum: 1, example: 3 },
           },
         },
@@ -240,19 +298,37 @@ const options = {
         OrderItem: {
           type: 'object',
           properties: {
-            product: { type: 'string' },
+            product: {
+              type: 'object',
+              properties: {
+                _id: { type: 'string', example: idExample },
+                name: { type: 'string', example: 'iPhone 15 Pro Max' },
+                price: { type: 'number', example: 34990000 },
+              },
+            },
             quantity: { type: 'integer', example: 2 },
-            price: { type: 'number', example: 29990000 },
+            price: { type: 'number', example: 34990000 },
           },
         },
         Order: {
           type: 'object',
           properties: {
-            _id: { type: 'string' },
-            user: { type: 'string' },
+            _id: { type: 'string', example: idExample },
+            user: {
+              type: 'object',
+              properties: {
+                _id: { type: 'string', example: idExample },
+                name: { type: 'string', example: 'Nguyen Van A' },
+                email: { type: 'string', example: 'user@example.com' },
+              },
+            },
             items: { type: 'array', items: { $ref: '#/components/schemas/OrderItem' } },
-            totalPrice: { type: 'number', example: 59980000 },
-            status: { type: 'string', enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'], example: 'pending' },
+            totalPrice: { type: 'number', example: 69980000 },
+            status: {
+              type: 'string',
+              enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],
+              example: 'pending',
+            },
             shippingAddress: { type: 'string', example: '123 Nguyen Hue, HCM' },
             createdAt: { type: 'string', format: 'date-time' },
             updatedAt: { type: 'string', format: 'date-time' },
@@ -262,14 +338,18 @@ const options = {
           type: 'object',
           required: ['shippingAddress'],
           properties: {
-            shippingAddress: { type: 'string', example: '123 Nguyen Hue, HCM' },
+            shippingAddress: { type: 'string', example: '123 Nguyen Hue, Quan 1, TP.HCM' },
           },
         },
         UpdateOrderStatusInput: {
           type: 'object',
           required: ['status'],
           properties: {
-            status: { type: 'string', enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'], example: 'processing' },
+            status: {
+              type: 'string',
+              enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],
+              example: 'processing',
+            },
           },
         },
         // ── Common ──
@@ -277,6 +357,7 @@ const options = {
           type: 'object',
           properties: {
             success: { type: 'boolean', example: true },
+            message: { type: 'string' },
             data: { type: 'object' },
           },
         },
@@ -285,30 +366,20 @@ const options = {
           properties: {
             success: { type: 'boolean', example: false },
             message: { type: 'string' },
-            errors: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  field: { type: 'string' },
-                  error: { type: 'string' },
-                },
-              },
-            },
           },
         },
         ValidationError: {
           type: 'object',
           properties: {
             success: { type: 'boolean', example: false },
-            message: { type: 'string' },
+            message: { type: 'string', example: 'Dữ liệu không hợp lệ' },
             errors: {
               type: 'array',
               items: {
                 type: 'object',
                 properties: {
-                  field: { type: 'string' },
-                  error: { type: 'string' },
+                  field: { type: 'string', example: 'body.name' },
+                  error: { type: 'string', example: 'Tên không được để trống!' },
                 },
               },
             },
