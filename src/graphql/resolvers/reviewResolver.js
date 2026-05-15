@@ -12,7 +12,7 @@ const checkUser = (context) => {
 
 module.exports = {
   Query: {
-    getProductReviews: async (_, args, context, info) => {
+    productReviews: async (_, args, context, info) => {
       objectIdSchema.parse(args.productId);
       return await reviewService.getProductReviews(args.productId);
     },

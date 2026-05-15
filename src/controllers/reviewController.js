@@ -45,6 +45,27 @@ class ReviewController {
     }
   };
 
+  // [PUT] /api/products/:id/reviews/:reviewId
+  updateReview = async (req, res) => {
+    try {
+      const review = await reviewService.updateReview(
+        req.params.reviewId,
+        req.user._id.toString(),
+        req.user.role,
+        req.body
+      );
+      return res.status(200).json({
+        success: true,
+        data: review,
+      });
+    } catch (error) {
+      return res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  };
+
   // [DELETE] /api/products/:id/reviews/:reviewId
   deleteReview = async (req, res) => {
     try {

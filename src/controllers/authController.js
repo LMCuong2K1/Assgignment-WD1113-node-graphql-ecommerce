@@ -50,7 +50,7 @@ class AuthController {
 
   getProfile = async (req, res) => {
     try {
-      const user = await authService.getProfile(req.user.id);
+      const user = await authService.getProfile(req.user._id);
       res.status(200).json({
         success: true,
         data: user,
@@ -65,8 +65,7 @@ class AuthController {
   };
   updateProfile = async (req, res) => {
     try {
-      const updateData = { ...req.body };
-      const user = await authService.updateProfile(req.user.id, req.body);
+      const user = await authService.updateProfile(req.user._id, req.body);
       res.status(200).json({
         success: true,
         data: user,

@@ -29,7 +29,7 @@ productId:ID!
 
 
 type Query{
-    getCart:Cart
+    cart:Cart
 }
 
 type Mutation{

@@ -20,6 +20,16 @@ module.exports = {
   getProductReviewsSchema: z.object({
     params: z.object({ id: objectIdSchema }),
   }),
+  updateReviewSchema: z.object({
+    params: z.object({
+      id: objectIdSchema,
+      reviewId: objectIdSchema,
+    }),
+    body: z.object({
+      rating: ratingInputSchema.optional(),
+      comment: commentInputSchema,
+    }),
+  }),
   deleteReviewSchema: z.object({
     params: z.object({
       id: objectIdSchema,

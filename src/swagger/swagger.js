@@ -194,6 +194,13 @@ const options = {
             comment: { type: 'string', example: 'Sản phẩm tuyệt vời!' },
           },
         },
+        UpdateReviewInput: {
+          type: 'object',
+          properties: {
+            rating: { type: 'integer', minimum: 1, maximum: 5, example: 4 },
+            comment: { type: 'string', example: 'Đã cập nhật: chất lượng ổn!' },
+          },
+        },
         // ── Cart ──
         CartItem: {
           type: 'object',

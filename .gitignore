@@ -9,3 +9,5 @@ yarn-debug.log*
 yarn-error.log*
 
 logs/
+server_out*.txt
+server_err*.txt

@@ -56,7 +56,7 @@ class ReviewService {
       },
       body,
       {
-        new: true,
+        returnDocument: "after",
         runValidators: true,
       },
     );

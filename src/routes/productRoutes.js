@@ -12,6 +12,7 @@ const {
 const {
     createReviewSchema,
     getProductReviewsSchema,
+    updateReviewSchema,
     deleteReviewSchema,
 } = require("../utils/review.validation");
 const router = express.Router();
@@ -337,6 +338,37 @@ router.get("/:id/reviews", validate(getProductReviewsSchema), reviewController.g
  *       400:
  *         description: Xóa thất bại
  */
+/**
+ * @swagger
+ * /api/products/{id}/reviews/{reviewId}:
+ *   put:
+ *     summary: Cập nhật đánh giá (chủ sở hữu hoặc Admin)
+ *     tags: [Reviews]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: reviewId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UpdateReviewInput'
+ *     responses:
+ *       200:
+ *         description: Cập nhật thành công
+ */
+router.put("/:id/reviews/:reviewId", protect, validate(updateReviewSchema), reviewController.updateReview);
+
 router.delete("/:id/reviews/:reviewId", protect, validate(deleteReviewSchema), reviewController.deleteReview);
 
 module.exports = router;

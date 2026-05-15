@@ -20,7 +20,7 @@ module.exports = {
     comment:String
     }
     type Query{
-    getProductReviews(productId:ID!):[Review]
+    productReviews(productId:ID!):[Review]
     }
     type Mutation{
     createReview(input:CreateReviewInput!):Review

@@ -20,7 +20,7 @@ const userCheck = (context) => {
 
 module.exports = {
   Query: {
-    getCart: async (_, args, context, info) => {
+    cart: async (_, args, context, info) => {
       userCheck(context);
       const { cartFields, productFields } = cartFieldSelect(info);
       return await cartService.getCart(

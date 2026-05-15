@@ -23,7 +23,7 @@ class CategoryService {
     }
 
     const category = await Category.findByIdAndUpdate(id, updateData, {
-      new: true,
+      returnDocument: "after",
       runValidators: true,
     });
     if (!category) throw new Error("Không tìm thấy danh mục!");

@@ -17,7 +17,7 @@ const checkAdmin = (context) => {
 
 module.exports = {
   Query: {
-    myOrders: async (_, args, context) => {
+    orders: async (_, args, context) => {
       checkAuth(context);
       return await orderService.getOrders(context.user.id);
     },

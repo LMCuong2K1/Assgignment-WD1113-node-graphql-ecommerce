@@ -33,7 +33,7 @@ class AuthService {
   };
   updateProfile = async (userId, updateData) => {
     const user = await User.findByIdAndUpdate(userId, updateData, {
-      new: true,
+      returnDocument: "after",
       runValidators: true,
     });
     if (!user) throw new Error("Không tìm thấy user!");

@@ -116,7 +116,7 @@ query {
 
 # Get user's cart
 query {
-  getCart {
+  cart {
     _id
     items {
       product {
@@ -131,7 +131,7 @@ query {
 
 # Get user's orders
 query {
-  myOrders {
+  orders {
     _id
     totalPrice
     status

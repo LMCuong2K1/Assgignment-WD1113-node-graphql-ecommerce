@@ -32,15 +32,6 @@ class ProductService {
         const product = await Product.findOne({ _id: id, isActive: true });
         if (!product) throw new Error("Product is not exist!");
 
-        // if (body.name) {
-        //     let existProduct = await Product.findOne({ name: body.name, isActive: true });
-        //     if (existProduct && existProduct._id.toString() !== id) throw new Error("Tên Product đã tồn tại!");
-        // }
-        // if (body.sku) {
-        //     let existProduct = await Product.findOne({ sku: body.sku, isActive: true });
-        //     if (existProduct && existProduct._id.toString() !== id) throw new Error("SKU Product đã tồn tại!");
-        // }
-
         if (body.name || body.sku) {
             const conditions = [];
             if (body.name) conditions.push({ name: body.name });

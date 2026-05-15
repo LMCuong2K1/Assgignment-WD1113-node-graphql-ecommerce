@@ -10,11 +10,12 @@ module.exports = {
         processing
         shipped
         delivered
+        cancelled
         }
 
     type Order {
         _id: ID!
-        user: ID!
+        user: User!
         items: [OrderItem!]
         totalPrice: Float!
         status: OrderStatus!
@@ -24,7 +25,7 @@ module.exports = {
     }
 
     type Query {
-        myOrders: [Order]
+        orders: [Order]
         order(id: ID!): Order
         allOrders: [Order]
     }

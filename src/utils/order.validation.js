@@ -7,7 +7,7 @@ const shippingAddressInputSchema = z.object({
     .min(1, { message: "Địa chỉ không được để trống!" }),
 });
 const orderStatusInputSchema = z.object({
-  status: z.enum(["pending", "processing", "shipped", "delivered"], {
+  status: z.enum(["pending", "processing", "shipped", "delivered", "cancelled"], {
     required_error: "Trạng thái không được để trống!",
     invalid_type_error: "Trạng thái không hợp lệ!",
   }),

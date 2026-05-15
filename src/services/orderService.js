@@ -25,7 +25,7 @@ class OrderService {
       const updated = await Product.findOneAndUpdate(
         { _id: item.product._id, stock: { $gte: item.quantity } },
         { $inc: { stock: -item.quantity } },
-        { new: true }
+        { returnDocument: "after" }
       );
 
       if (!updated) {
@@ -65,12 +65,15 @@ class OrderService {
     cart.items = [];
     await cart.save();
 
-    return order.populate("items.product", "name price images slug");
+    await order.populate("user", "name email");
+    await order.populate("items.product", "name price images slug");
+    return order;
   };
 
   // Lấy danh sách đơn hàng của user
   getOrders = async (userId) => {
     const orders = await Order.find({ user: userId })
+      .populate("user", "name email")
       .populate("items.product", "name price images slug")
       .sort({ createdAt: -1 });
     return orders;
@@ -78,10 +81,9 @@ class OrderService {
 
   // Lấy chi tiết 1 đơn hàng
   getOrderById = async (orderId, userId, userRole) => {
-    const order = await Order.findById(orderId).populate(
-      "items.product",
-      "name price images slug"
-    );
+    const order = await Order.findById(orderId)
+      .populate("user", "name email")
+      .populate("items.product", "name price images slug");
     if (!order) throw new Error("Không tìm thấy đơn hàng!");
 
     // User thường chỉ xem được đơn của mình
@@ -98,14 +100,22 @@ class OrderService {
     if (!order) throw new Error("Không tìm thấy đơn hàng!");
 
     // Kiểm tra logic chuyển trạng thái (chỉ đi theo thứ tự)
-    const statusFlow = ["pending", "processing", "shipped", "delivered"];
-    const currentIndex = statusFlow.indexOf(order.status);
-    const newIndex = statusFlow.indexOf(status);
+    if (status === "cancelled") {
+      if (order.status === "shipped" || order.status === "delivered") {
+        throw new Error(
+          `Không thể hủy đơn hàng đã "${order.status}"!`
+        );
+      }
+    } else {
+      const statusFlow = ["pending", "processing", "shipped", "delivered"];
+      const currentIndex = statusFlow.indexOf(order.status);
+      const newIndex = statusFlow.indexOf(status);
 
-    if (newIndex <= currentIndex) {
-      throw new Error(
-        `Không thể chuyển từ "${order.status}" sang "${status}"!`
-      );
+      if (newIndex <= currentIndex) {
+        throw new Error(
+          `Không thể chuyển từ "${order.status}" sang "${status}"!`
+        );
+      }
     }
 
     order.status = status;
