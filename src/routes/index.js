@@ -15,6 +15,34 @@ router.use("/products", productRoutes);
 router.use("/cart", cartRoutes);
 router.use("/orders", orderRoutes);
 
+/**
+ * @swagger
+ * /api/users:
+ *   get:
+ *     summary: Lấy danh sách tất cả người dùng (Admin)
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lấy danh sách thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/User'
+ *       401:
+ *         description: Chưa đăng nhập
+ *       403:
+ *         description: Không có quyền admin
+ */
 router.get("/users", protect, admin, AuthController.getAllUsers);
 
 module.exports = router;
