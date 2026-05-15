@@ -7,13 +7,15 @@ const validate = (schema) => (req, res, next) => {
     });
     next();
   } catch (err) {
+    const issues = err.issues || err.errors || [];
+    const errors = issues.map((e) => ({
+      field: e.path?.join(".") || "unknown",
+      error: e.message,
+    }));
     return res.status(400).json({
-      status: "error",
+      success: false,
       message: "Dữ liệu không hợp lệ",
-      error: err.errors?.map((e) => ({
-        field: e.path,
-        error: e.message,
-      })) || [{ message: err.message }],
+      errors,
     });
   }
 };

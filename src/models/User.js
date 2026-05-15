@@ -41,11 +41,8 @@ const userSchema = new mongoose.Schema(
 );
 
 // Middleware của Mongoose: Chạy NGAY TRƯỚC KHI lưu user vào database
-userSchema.pre("save", async function (next) {
-  // Nếu password không bị thay đổi (ví dụ khi chỉ cập nhật tên), thì bỏ qua
-  if (!this.isModified("password")) {
-    next();
-  }
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 });
