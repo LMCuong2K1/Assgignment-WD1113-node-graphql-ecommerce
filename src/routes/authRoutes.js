@@ -57,7 +57,7 @@ router.post("/register", validate(registerSchema), AuthController.register);
  * @swagger
  * /api/auth/login:
  *   post:
- *     summary: Đăng nhập
+ *     summary: Đăng nhập (Admin: admin@shoponline.com / admin123)
  *     tags: [Auth]
  *     security: []
  *     requestBody:

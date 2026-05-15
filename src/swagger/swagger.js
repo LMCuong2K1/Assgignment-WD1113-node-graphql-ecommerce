@@ -48,10 +48,11 @@ const options = {
         },
         LoginInput: {
           type: 'object',
+          description: 'Email: admin@shoponline.com / Password: admin123',
           required: ['email', 'password'],
           properties: {
-            email: { type: 'string', format: 'email', example: 'user@example.com' },
-            password: { type: 'string', example: 'password123' },
+            email: { type: 'string', format: 'email', example: 'admin@shoponline.com' },
+            password: { type: 'string', example: 'admin123' },
           },
         },
         AuthResponse: {
