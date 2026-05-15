@@ -1,46 +1,31 @@
 const catchAsync = require("../utils/catchAsync");
+const { success } = require("../utils/response");
 const productService = require("../services/productService");
 
 class ProductController {
   createProduct = catchAsync(async (req, res) => {
     const product = await productService.createProduct(req.body);
-    return res.status(201).json({
-      success: true,
-      data: product,
-    });
+    success(res, { data: product, statusCode: 201 });
   });
 
   getProducts = catchAsync(async (req, res) => {
-    const { products, count } = await productService.findAllProducts(req.query);
-    return res.status(200).json({
-      success: true,
-      count,
-      data: products,
-    });
+    const { products, count, totalPages, page, limit } = await productService.findAllProducts(req.query);
+    success(res, { data: products, count, totalPages, page, limit });
   });
 
   getProductById = catchAsync(async (req, res) => {
     const product = await productService.findProductById(req.params.id);
-    return res.status(200).json({
-      success: true,
-      data: product,
-    });
+    success(res, { data: product });
   });
 
   updateProduct = catchAsync(async (req, res) => {
     const product = await productService.updateProduct(req.params.id, req.body);
-    return res.status(200).json({
-      success: true,
-      data: product,
-    });
+    success(res, { data: product });
   });
 
   deleteProduct = catchAsync(async (req, res) => {
     await productService.deleteProduct(req.params.id);
-    return res.status(200).json({
-      success: true,
-      message: "Xóa sản phẩm thành công",
-    });
+    success(res, { message: "Xóa sản phẩm thành công" });
   });
 }
 

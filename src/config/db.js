@@ -3,6 +3,9 @@ const mongoose = require('mongoose');
 const connectDB = async () => {
   try {
     const conn = await mongoose.connect(process.env.MONGO_URI);
+    mongoose.set("toJSON", {
+      transform: (doc, ret) => { delete ret.__v; return ret; },
+    })
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
     console.error(`Error: ${error.message}`);

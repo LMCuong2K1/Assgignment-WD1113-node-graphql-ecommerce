@@ -1,6 +1,8 @@
 require('dotenv').config();
 const app = require('./app');
 const connectDB = require('./config/db');
+const mongoose = require('mongoose');
+const logger = require('./utils/logger');
 
 const PORT = process.env.PORT || 5000;
 
@@ -22,5 +24,15 @@ const startServer = async () => {
     process.exit(1);
   }
 };
+
+process.on("SIGINT", async () => {
+  console.log("Shutting down gracefully...");
+  await mongoose.connection.close();
+  process.exit(0);
+})
+process.on("unhandledRejection", (err) => {
+  logger.error("UNHANDLED REJECTION:", err);
+  process.exit(1);
+});
 
 startServer();

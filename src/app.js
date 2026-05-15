@@ -14,7 +14,10 @@ const logger = require("./utils/logger");
 // Middlewares
 app.use(express.json());
 app.set("trust proxy", 1);
-app.use(cors());
+app.use(cors({
+  origin: process.env.CLIENT_URL || "http://localhost:3000",
+  credentials: true
+}));
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(morgan("dev"));
 
