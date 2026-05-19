@@ -4,12 +4,11 @@ const User = require("../models/User");
 class AuthMiddleware {
   protect = async (req, res, next) => {
     let token;
-    if (
-      req.headers.authorization &&
-      req.headers.authorization.startsWith("Bearer")
-    ) {
+    if (req.headers.authorization) {
       try {
-        token = req.headers.authorization.split(" ")[1];
+        token = req.headers.authorization.startsWith("Bearer")
+          ? req.headers.authorization.split(" ")[1]
+          : req.headers.authorization;
         const decode = jwt.verify(token, process.env.JWT_SECRET);
         req.user = await User.findById(decode.id);
         next();

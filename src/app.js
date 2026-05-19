@@ -41,7 +41,33 @@ app.use("/health", require("./routes/healthRoutes"));
 app.use("/api", require("./routes/index"));
 
 // Swagger UI
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
+const swaggerCustomOptions = {
+  customJsStr: `
+    const originalFetch = window.fetch;
+    window.fetch = async function(...args) {
+      const response = await originalFetch.apply(this, args);
+      const url = args[0] instanceof Request ? args[0].url : args[0];
+      if (url.includes('/api/auth/login') && response.ok) {
+        try {
+          const clone = response.clone();
+          const resData = await clone.json();
+          if (resData.data && resData.data.token) {
+            window.ui.authActions.authorize({
+              bearerAuth: {
+                name: 'bearerAuth',
+                schema: { type: 'http', in: 'header', name: 'Authorization', scheme: 'bearer' },
+                value: resData.data.token
+              }
+            });
+            setTimeout(() => alert("✅ Tự động gắn Token thành công! Bạn không cần copy-paste nữa, hãy test luôn các API khác!"), 300);
+          }
+        } catch(e) { console.error(e) }
+      }
+      return response;
+    };
+  `
+};
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecs, swaggerCustomOptions));
 
 // GraphQL initialization will be done asynchronously before starting the server
 app.setupGraphQL = async () => {
@@ -56,12 +82,11 @@ app.setupGraphQL = async () => {
     expressMiddleware(server, {
       context: async ({ req }) => {
         let user = null;
-        if (
-          req.headers.authorization &&
-          req.headers.authorization.startsWith("Bearer")
-        ) {
+        if (req.headers.authorization) {
           try {
-            const token = req.headers.authorization.split(" ")[1];
+            const token = req.headers.authorization.startsWith("Bearer")
+              ? req.headers.authorization.split(" ")[1]
+              : req.headers.authorization;
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
             user = await User.findById(decoded.id);
           } catch (err) {

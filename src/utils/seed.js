@@ -98,6 +98,7 @@ const categories = [
 const productTemplates = [
   // ── iPhone ──
   {
+    _id: "665a1b2c3d4e5f6a7b8c9d0e",
     name: "iPhone 15 Pro Max",
     description:
       "iPhone 15 Pro Max 256GB, chip A17 Pro, camera 48MP, khung Titanium",
@@ -274,16 +275,20 @@ const seedData = async () => {
     );
 
     // 4️⃣ Seed Products
-    const productsToCreate = productTemplates.map((p) => ({
-      name: p.name,
-      description: p.description,
+    const productsToCreate = productTemplates.map((p) => {
+      const prod = {
+        name: p.name,
+        description: p.description,
       price: p.price,
       stock: p.stock,
       category: categoryMap[p.categorySlug],
       sku: p.sku,
       slug: slugify(p.name, { lower: true, strict: true }),
-      images: p.images,
-    }));
+        images: p.images,
+      };
+      if (p._id) prod._id = p._id;
+      return prod;
+    });
     const createdProducts = await Product.create(productsToCreate);
     console.log(`📦 Created ${createdProducts.length} products`);
 

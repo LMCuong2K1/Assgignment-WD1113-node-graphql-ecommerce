@@ -1,4 +1,4 @@
-const id = '665a1b2c3d4e5f6a7b8c9d0e';
+const id = '6a0c8e29a6f713b6f2c1de78';
 
 const specs = {
   openapi: '3.0.0',
@@ -72,11 +72,11 @@ const specs = {
       },
       LoginInput: {
         type: 'object',
-        description: 'Admin: admin@shoponline.com / admin123',
+        description: 'Tài khoản test - Admin: admin@shoponline.com / admin123 | User: nguyenvana@gmail.com / user12345',
         required: ['email', 'password'],
         properties: {
-          email: { type: 'string', format: 'email', example: 'admin@shoponline.com' },
-          password: { type: 'string', example: 'admin123' },
+          email: { type: 'string', format: 'email', example: 'nguyenvana@gmail.com' },
+          password: { type: 'string', example: 'user12345' },
         },
       },
       AuthResponse: {
@@ -563,8 +563,8 @@ const specs = {
     '/api/auth/login': {
       post: {
         tags: ['Auth'],
-        summary: 'Đăng nhập (Admin: admin@shoponline.com / admin123)',
-        description: 'Đăng nhập và nhận JWT token. Token dùng cho các endpoint cần xác thực.',
+        summary: 'Đăng nhập (Dùng chung cho cả Admin & User)',
+        description: 'Đăng nhập và nhận JWT token. Token dùng cho các endpoint cần xác thực. Tài khoản test: nguyenvana@gmail.com / user12345 (User) hoặc admin@shoponline.com / admin123 (Admin)',
         security: [],
         requestBody: {
           required: true,
@@ -572,8 +572,8 @@ const specs = {
             'application/json': {
               schema: { $ref: '#/components/schemas/LoginInput' },
               example: {
-                email: 'admin@shoponline.com',
-                password: 'admin123',
+                email: 'nguyenvana@gmail.com',
+                password: 'user12345',
               },
             },
           },
